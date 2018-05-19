@@ -1,6 +1,6 @@
 ## ################# ##
-## SNP filtering	 ##
-## Narinder Singh	 ##
+## SNP filtering     ##
+## Narinder Singh    ##
 ## Revised 4/28/2017 ##
 ## ################# ##
 
