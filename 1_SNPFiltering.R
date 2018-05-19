@@ -1,8 +1,8 @@
-## ################################ ##
-## SNP filtering                    ##
-## Narinder Singh and Jesse Poland  ##
-## Revised 4/28/2017                ##
-## ################################ ##
+## ################## ##
+## SNP filtering      ##
+## Narinder Singh	  ##
+## Revised 4/28/2017  ##
+## ################## ##
 
 # read all 3 hap files
 hap1 <- read.table(file = "data/_170419_tauschii_wgrc1_20170429.hap", header = T, check.names = F, stringsAsFactors = F)
