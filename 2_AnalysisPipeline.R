@@ -1,8 +1,8 @@
-## ################################ ##
-## Gene Bank Curation	        	   ##
-## Narinder Singh and Jesse Poland  ##
-## Updated 05/19/17  	      	   ##
-## #############################%## ##
+## ################### ##
+## Gene Bank Curation  ##
+## Narinder Singh      ##
+## Updated 08/18/17    ##
+## ################### ##
 
 # load functions
 source('genebank_functions.R')
