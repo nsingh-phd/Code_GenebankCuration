@@ -14,6 +14,7 @@ ErrorRate <- function(reGBS.Run, compute.error.on) {
        '%')
 }
 
+# function to compute identity matrix by allele matching
 alleleMatching <- function(allele.match=allele.match) {
     nS = ncol(allele.match)-9
     id = matrix(NA, nrow=nS, ncol=nS)
