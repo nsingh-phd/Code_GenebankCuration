@@ -1,8 +1,8 @@
-## ################### ##
-## Gene Bank Curation  ##
-## Narinder Singh      ##
-## Updated 08/18/17    ##
-## ################### ##
+## ################################ ##
+## Gene Bank Curation	        	   ##
+## Narinder Singh and Jesse Poland  ##
+## Updated 05/19/17  	      	   ##
+## #############################%## ##
 
 # load functions
 source('genebank_functions.R')
@@ -106,12 +106,15 @@ source('genebank_functions.R')
          #        pch = 16, cex = 1.5)
       dev.off()
 
+#######################################
+## compute ID matrix by allele matching
+#######################################
+      hap <- fread("data/hapFile.txt", header = T, check.names = F, data.table = F)
+      alleleMatching(allele.match = hap) # this is computationally intensive step
+
 #################
 ## load id matrix
 #################
-
-# load functions
-source('genebank_functions.R')
 
    id <- as.matrix(read.table('data/idFull.mat', header = T, check.names = F))
    dim(id)
