@@ -14,6 +14,29 @@ ErrorRate <- function(reGBS.Run, compute.error.on) {
        '%')
 }
 
+alleleMatching <- function(allele.match=allele.match) {
+    nS = ncol(allele.match)-9
+    id = matrix(NA, nrow=nS, ncol=nS)
+    for (i in 1:nrow(id)){
+      id_ct <- rep(NA, length(i:nrow(id)))
+      id_pc <- rep(NA, length(i:nrow(id)))
+        for (j in i:ncol(id)){
+          line1 = as.character(allele.match[,i+9])
+          line2 = as.character(allele.match[,j+9])
+          shared = line1!="N" & line2!="N" & line1!="H" & line2!="H"
+          common = line1[shared] == line2[shared]
+          id_pc[j-i+1] <- sum(common)/sum(shared)
+          id_ct[j-i+1] <- sum(shared)
+        }
+      id[i,i:ncol(id)] <- id_ct
+      id[i:ncol(id),i] <- id_pc
+    }
+      rownames(id)=colnames(allele.match)[-c(1:9)]
+      colnames(id)=colnames(allele.match)[-c(1:9)]
+      write.table(id, file="data/idFull.mat", quote=F, sep="\t")
+      cat('Done computing. Identity matrix has been saved as a tab-delimited file named idFull.mat')
+}
+
 # function to create a data.frame with identical accessions
 identicalAccessions <- function(id, rows = 1:nrow(id), cols = 1:ncol(id)) {
 
