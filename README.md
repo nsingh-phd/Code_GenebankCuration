@@ -37,3 +37,5 @@
 	* Use the JAR file and Keyfile for SNP calling
 	
 ### This is an easy implementation of Tassel as used in this project. Please download the unmodified version of Tassel from the developer's website http://www.maizegenetics.net
+
+For any question or concern please contact me at nss470[at]ksu[dot]edu
