@@ -38,4 +38,6 @@
 	
 ### This is an easy implementation of Tassel as used in this project. Please download the unmodified version of Tassel from the developer's website http://www.maizegenetics.net
 
+### Tassel is developed by Ed Buckler's group at Cornell University.
+
 For any question or concern please contact me at nss470[at]ksu[dot]edu
