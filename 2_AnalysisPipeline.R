@@ -1,7 +1,7 @@
 ## ################## ##
 ## Gene Bank Curation ##
 ## Narinder Singh     ##
-## Updated 05/19/17   ##
+## Updated 09/12/18   ##
 ## ################## ##
 
 # load functions
@@ -83,7 +83,7 @@ source('genebank_functions.R')
 
       # plotting tree
       library(ape)
-      pdf("cluster_tauschii_genebanks.pdf", width = 20, height = 20)
+      pdf("Fig.S2_cluster.pdf", width = 20, height = 20)
          plot(hc2, type = 'u', lab4ut = "axial", label.offset = 1, cex = 0.25,
               edge.color = edgecols[, 3], edge.width = 2, tip.color = tipcols[, 3])
          title(cex.main = 2.5, line = -1.5,
@@ -109,6 +109,7 @@ source('genebank_functions.R')
 #######################################
 ## compute ID matrix by allele matching
 #######################################
+      # read hapfile output from 1_SNPFiltering.R
       hap <- fread("data/hapFile.txt", header = T, check.names = F, data.table = F)
       alleleMatching(allele.match = hap) # this is computationally intensive step
 
@@ -393,6 +394,8 @@ source('genebank_functions.R')
    pau.grps <- sum(grp.accessions.data$PAU > 0); pau.grps
    cimmyt.grps <- sum(grp.accessions.data$CIMMYT > 0); cimmyt.grps
 
+   unique_counts <- c(nrow(grp.accessions.data), wgrc.grps, pau.grps, cimmyt.grps)
+
    # calculate percent uniqueness
    whole.uniq = (nrow(grp.accessions.data) / total.acc) * 100; whole.uniq
    wgrc.uniq = (wgrc.grps / length(wgrc)) * 100; wgrc.uniq
@@ -406,7 +409,7 @@ source('genebank_functions.R')
 
    # barplot
    library(ggplot2)
-   pdf('barplot_collections.pdf')
+   pdf('Fig2_barplotWithinCollections.pdf')
 
    alpha.val = 0.4
    uniqueness <- c(whole.uniq, wgrc.uniq, pau.uniq, cimmyt.uniq)
@@ -414,6 +417,7 @@ source('genebank_functions.R')
            col = alpha(c('black', 'red', 'blue', 'green'), alpha.val),
            ylim = c(0, 100), width = 10, xlim = c(0, 50), cex.names = 1.5, cex.axis = 1.5)
    text(bplot, uniqueness + 6, labels = round(uniqueness, 2), cex = 1.5)
+   text(bplot, uniqueness - 6, labels = unique_counts, cex = 1.5)
    mtext("% Unique accessions", 2, cex = 1.5, line = 2.5)
 
    dev.off()
@@ -452,26 +456,31 @@ source('genebank_functions.R')
    #############
 
    ### overall pairwise identity
-   pdf('pIBS_histograms.pdf', width = 11, height = 8.5)
-   par(mfrow=c(2,2))
+   pdf('Fig.S3_pIBS_hist-i.pdf', height = 5, width = 11)
+   par(mfrow=c(1,2))
 
-   hist(id[lower.tri(id)], xlab = 'pIBS',
-        main = 'pIBS distribution for three genebanks collectively')
+   hist(id[lower.tri(id)], xlab = 'pIBS', breaks = 30, cex.axis = 1.25,
+        cex.main = 1.5, cex.lab = 1.5, main = 'All genebanks collectively')
    abline(v = mean(id[lower.tri(id)]), col = 'red', lty = 2)
 
    wgrc.hist <- id[rownames(id) %in% wgrc, colnames(id) %in% wgrc]
-   hist(wgrc.hist[lower.tri(wgrc.hist)], xlab = 'pIBS',
-        main = 'pIBS distribution for WGRC genebank')
+   hist(wgrc.hist[lower.tri(wgrc.hist)], xlab = 'pIBS', breaks = 30, cex.axis = 1.25,
+        cex.main = 1.5, cex.lab = 1.5, main = 'WGRC genebank')
    abline(v = mean(wgrc.hist[lower.tri(wgrc.hist)]), col = 'red', lty = 2)
 
+   dev.off()
+
+   pdf('Fig.S3_pIBS_hist-ii.pdf', height = 5, width = 11)
+   par(mfrow=c(1,2))
+
    cimmyt.hist <- id[rownames(id) %in% cimmyt, colnames(id) %in% cimmyt]
-   hist(cimmyt.hist[lower.tri(cimmyt.hist)], xlab = 'pIBS',
-        main = 'pIBS distribution for CIMMYT genebank')
+   hist(cimmyt.hist[lower.tri(cimmyt.hist)], xlab = 'pIBS', breaks = 30,
+        cex.axis = 1.25, cex.main = 1.5, cex.lab = 1.5, main = 'CIMMYT genebank')
    abline(v = mean(cimmyt.hist[lower.tri(cimmyt.hist)]), col = 'red', lty = 2)
 
    pau.hist <- id[rownames(id) %in% pau, colnames(id) %in% pau]
-   hist(pau.hist[lower.tri(pau.hist)], xlab = 'pIBS',
-        main = 'pIBS distribution for PAU genebank')
+   hist(pau.hist[lower.tri(pau.hist)], xlab = 'pIBS', breaks = 30,
+        cex.axis = 1.25, cex.main = 1.5, cex.lab = 1.5, main = 'PAU genebank')
    abline(v = mean(pau.hist[lower.tri(pau.hist)]), col = 'red', lty = 2)
 
    dev.off()
@@ -498,6 +507,72 @@ source('genebank_functions.R')
 
    # print out nei
    nei.wgrc; nei.pau; nei.cimmyt
+
+######################################
+## read count distribution per sample
+######################################
+   read.counts <- read.table('data/ReadCountsByTaxa.txt', header = T, as.is = T)
+   read.counts <- read.counts[grep(paste0(c('regbs', 'L1'), collapse = '|'), read.counts$name, invert = T, ignore.case = T), ]
+
+   read.counts.sample <- tapply(read.counts$readCount, read.counts$name, sum)
+   read.counts.sample <- data.frame('accession' = names(read.counts.sample), 'readCount' = read.counts.sample , stringsAsFactors = F)
+
+   read.counts.sample$set <- 'Set 1'
+   read.counts.sample$set[grep('GID', read.counts.sample$accession)] <- 'Set 2'
+
+   # tag count distribution per sample
+   tag.counts <- read.csv('data/TagCountsByTaxa.csv', header = T, as.is = T)
+   tag.counts <- tag.counts[grep('blank', tag.counts$V1, ignore.case = T, invert = T), ]
+   tag.counts$set <- 'Set 1'
+   tag.counts$set[grep('GID', tag.counts$V1, ignore.case = T)] = 'Set 2'
+
+   pdf('Fig.S1_ReadCounts.pdf', height = 5.5, width = 8.5)
+   par(mfrow=c(1,2))
+   boxplot(read.counts.sample$readCount ~ read.counts.sample$set, yaxt = 'n', cex.names = 2)
+   mtext(text = 'Barcoded read count per sample', side = 3, cex = 1.25, line = 1)
+   mtext(text = expression(paste("Read count (10"^"6",')')), side = 2, cex = 1.25, line = 2.25)
+   axis(side = 2, at = seq(0, 50 * 10^6, 10^6), labels = seq(0, 50, 1), cex = 1.5)
+
+   boxplot(tag.counts$tag_count ~ tag.counts$set, yaxt = 'n', cex.names = 2)
+   mtext(text = 'Unique 64-mer count per sample', side = 3, cex = 1.25, line = 1)
+   mtext(text = expression(paste("64-mer count (10"^"5",')')), side = 2, cex = 1.25, line = 2.25)
+   axis(side = 2, at = seq(0, 10^6, 10^5), labels = seq(0, 10, 1), cex = 1.5)
+
+   dev.off()
+
+   # meand reads and tags per set
+   median(read.counts.sample$readCount[read.counts.sample$set=='Set 1'])
+   median(read.counts.sample$readCount[read.counts.sample$set=='Set 2'])
+
+   median(tag.counts$tag_count)
+   median(tag.counts$tag_count[tag.counts$set=='Set 1'])
+   median(tag.counts$tag_count[tag.counts$set=='Set 2'])
+
+###########################
+## tauschii geographic map
+###########################
+   library(ggplot2)
+   library(ggmap)
+   library(maps)
+   library(mapdata)
+
+   origin.data <- read.csv('data/tauschiiPassportMinimal.csv', header = T, as.is = T)
+   color <- rep('red', nrow(origin.data))
+   color[grep('TA109..', origin.data$TA)] <- 'blue'
+   origin.data <- cbind(origin.data, color)
+
+   origin.data <- origin.data[order(origin.data$color, decreasing = T), ]
+
+   # map.tauschii <- get_map(location = c(36, 30, 111, 45), maptype = "hybrid",
+   #                         source = "google", zoom = 3)
+
+   map.tauschii <- get_googlemap(center = c(lon = 55, lat = 37.5), color = 'bw',
+                                 zoom = 3, size = c(350, 170), scale = 2)
+
+   pdf(file = 'tauschii_map.pdf', height = 8.5, width = 11)
+   ggmap(map.tauschii) + geom_point(data = origin.data,
+                                    mapping = aes(x = LONGITUDE, y = LATITUDE), color = origin.data$color)
+   dev.off()
 
 ######
 ## END
